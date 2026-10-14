@@ -1,0 +1,31 @@
+name: Update Jira filters to the next sprint
+
+on:
+  schedule:
+    - cron: "0 13 * * 4"
+    - cron: "0 14 * * 4"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update-filters:
+    runs-on: ubuntu-latest
+    env:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      JIRA_BOARD_ID: "3674"
+      JIRA_FILTER_IDS: "98500,98499,98498,98497,98496,98495,98494,98492,98491,98489,98490,98488,98487,98484,98485"
+      SPRINT_ANCHOR_DATE: "2026-10-15"
+      RUN_TIMEZONE: "America/New_York"
+      RUN_LOCAL_HOUR: "9"
+      DRY_RUN: ${{ vars.JIRA_FILTER_UPDATE_DRY_RUN || 'true' }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run Jira filter updater
+        run: python3 scripts/update_jira_filters.py
